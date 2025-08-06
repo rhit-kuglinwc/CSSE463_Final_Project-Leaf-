@@ -1,4 +1,4 @@
-rootdir = 'C:\Users\sheffiha\Documents\Junior-Summer\ImageRecognition\CSSE463_Final_Project-Leaf-\archive (4)\Plants_2\';
+rootdir = [char(pwd) char('\archive (4)\Plants_2\')];
 subdir = [rootdir 'train'];
 
 trainImages = imageDatastore(...
