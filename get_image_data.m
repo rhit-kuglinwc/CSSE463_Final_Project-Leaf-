@@ -1,4 +1,4 @@
-rootdir = 'C:\Users\sheffiha\Documents\Junior-Summer\ImageRecognition\CSSE463_Final_Project-Leaf-\archive (4)\Plants_2\';
+rootdir = [char(pwd) char('\archive (4)\Plants_2\')];
 subdir = [rootdir 'train'];
 
 trainImages = imageDatastore(...
@@ -20,13 +20,7 @@ validateImages = imageDatastore(...
     'LabelSource', 'foldernames');
 
 % REPLACE WITH THE NET THAT YOU ARE USING
-net = darknet53;
-inputSize = net.Layers(1).InputSize;
-
-
-augimdsTrain = augmentedImageDatastore(inputSize(1:2),trainImages);
-augimdsTest = augmentedImageDatastore(inputSize(1:2),testImages);
-augimdsValidate = augmentedImageDatastore(inputSize(1:2),validateImages);
+net = xception;
 
 % Anonymous functions for matlab would be like a lambda in python
 extractCode = @(s) regexp(s, '\((P\d+)', 'tokens', 'once');
@@ -37,3 +31,18 @@ extractCode = @(s) regexp(s, '\((P\d+)', 'tokens', 'once');
 yTrain = categorical(cellfun(@(s) extractCode(s), cellstr(trainImages.Labels)));
 yTest = categorical(cellfun(@(s) extractCode(s), cellstr(testImages.Labels)));
 yValidate = categorical(cellfun(@(s) extractCode(s), cellstr(validateImages.Labels)));
+
+
+trainImages.Labels = yTrain;
+validateImages.Labels = yValidate;
+testImages.Labels = yTest;
+
+inputSize = net.Layers(1).InputSize;
+
+augimdsTrain = augmentedImageDatastore(inputSize(1:2),trainImages);
+augimdsTest = augmentedImageDatastore(inputSize(1:2),testImages);
+augimdsValidate = augmentedImageDatastore(inputSize(1:2),validateImages);
+
+numClasses = numel(categories(yTrain));
+
+save('leaf_features.mat', 'augimdsTrain', 'augimdsTest', "augimdsValidate", "numClasses")
