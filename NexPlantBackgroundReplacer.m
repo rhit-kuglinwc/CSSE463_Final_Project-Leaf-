@@ -2,11 +2,12 @@ clc;
 clear;
 close all hidden;
 
-img = imread("CSSE463_Final_Project-Leaf-\0005_0001.JPG");
+img = imread("CSSE463_Final_Project-Leaf-\Apple___Cedar_apple_rust\0a41c25a-f9a6-4c34-8e5c-7f89a6ac4c40___FREC_C.Rust 9807.JPG");
 
 img = imresize(img, 0.5, 'bicubic');
 
 img_hsv = rgb2hsv(img);
+imtool(img_hsv);
 mask = ~DetectBackground(img_hsv); % logical mask
 
 true_img = uint8( bsxfun(@times, double(img), double(mask)) );
@@ -17,9 +18,9 @@ imshow(true_img);
 function mask = DetectBackground(img_hsv)
     mask = zeros(size(img_hsv, 1), size(img_hsv, 2));
 
-    index = find(img_hsv(:, :, 1) > 0.25 & img_hsv(:, :, 1) < 0.70 & ...
-                    img_hsv(:, :, 2) < 0.65 ...
-                    & img_hsv(:, :, 3) < 0.55);
+    index = find(img_hsv(:, :, 1) < 0.20 | img_hsv(:, :, 1) > 0.90 & ...
+                    img_hsv(:, :, 2) < 0.20 ...
+                    & img_hsv(:, :, 3) < 0.75 & img_hsv(:, :, 3) > 0.35);
     
     mask(index) = 1;
     % imtool(mask)
@@ -50,7 +51,7 @@ function mask = DetectBackground(img_hsv)
     opening_disk = strel('disk', small_radius);
     mask = imopen(mask, opening_disk);
 
-    % imtool(mask);
+    imtool(mask);
     
 end
 
