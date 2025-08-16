@@ -70,7 +70,8 @@ options = trainingOptions("adam", ...
     ValidationFrequency=5, ...
     Plots="training-progress", ...
     Metrics="accuracy", ...
-    Verbose=false);
+    Verbose=false, ...
+    OutputFcn=@saveTrainingProgress);
 
 net = trainnet(augimdsTrain,net,"crossentropy",options);
 
@@ -165,4 +166,31 @@ connections = net.Connections;
 idx = find(connections.Destination == string(name));
 sourceNames = connections.Source(idx);
 
+end
+
+% Custom function to save plots (produced by gemini)
+function saveTrainingProgress(info)
+    persistent fig
+    if info.State == "start"
+        fig = figure('Visible','off'); % Create a figure in the background
+    end
+ 
+    if info.State == "iteration" && mod(info.Iteration, 10) == 0 % Save every 10 iterations
+        % Plot training and validation accuracy/loss
+        plot(info.Iteration, info.TrainingAccuracy, 'b.', 'MarkerSize', 10);
+        hold on;
+        plot(info.Iteration, info.ValidationAccuracy, 'r.', 'MarkerSize', 10);
+        grid on;
+        xlabel('Iteration');
+        ylabel('Accuracy');
+        title('Training Progress');
+        legend('Training Accuracy', 'Validation Accuracy');
+        % Save the figure to a file
+        filename = sprintf('training_progress_iteration_%d.png', info.Iteration);
+        saveas(fig, filename);
+    end
+ 
+    if info.State == "done"
+        close(fig); % Close the figure at the end
+    end
 end
