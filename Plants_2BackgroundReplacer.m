@@ -2,87 +2,40 @@ clc;
 clear;
 close all hidden;
 
-img = imread("Plants_2/test/Alstonia Scholaris diseased (P2a)/0014_0006.JPG");
+img = imread("CSSE463_Final_Project-Leaf-\Apple___Cedar_apple_rust\1a69060b-e45e-4d95-881c-f6d1960dffcd___FREC_C.Rust 0065_90deg.JPG");
 
 img = imresize(img, 0.5, 'bicubic');
 img_hsv = rgb2hsv(img);
 
-% imtool(img)
-% imtool(img_hsv)
-% imtool(img_gray)
-
-img_to_detect = img;
-mask = zeros(size(img, 1), size(img_hsv, 2));
-
-index = find(img(:, :, 1) < img(:, :, 2) & img(:, :, 3) < img(:, :, 2));
-mask(index) = 1;
-mask = imfill(mask);
-
-% mask = ~DetectBackground(img);
-
-
-
-
-
+mask = DetectedBackground_2(img);
 true_img = uint8( bsxfun(@times, double(img), double(mask)) );
-
-% imtool(true_img);
-true_img_hsv = rgb2hsv(true_img);
-% imtool(true_img_hsv)
-
-index = find(true_img_hsv(:, :, 1) < 0.75 & ...
-                true_img_hsv(:, :, 2) < 0.10 & true_img_hsv(:, :, 3) < 0.25);
-
-mask = zeros(size(img, 1), size(img_hsv, 2));
-mask(index) = 1;
-mask = ~mask;
-% imtool(mask);
+imtool(true_img)
 
 
-true_img = uint8( bsxfun(@times, double(true_img), double(mask)) );
-% imtool(true_img);
-grey_img = rgb2gray(true_img);
 
-img_labeled = bwlabel(grey_img, 4);
-max(max(img_labeled));
-allAreas = regionprops(img_labeled, 'Area');
-areas = [allAreas.Area];
-leaf_area = max(max(areas));
-leaf_index = find(areas == leaf_area);
-leaf_group = zeros(size(img_labeled));
-leaf_group(img_labeled == leaf_index) = 1;
-% for i = 1:length(img_labeled)
-%     if img_labeled(i) ~= leaf_group
-%         fprintf("triggered")
-%         img_labeled(i) = 0;
-%     end
-% end
-imtool(leaf_group);
-
-
-function mask = DetectBackground(img)
+function mask = DetectBackground_1(img)
     
     img_hsv = rgb2hsv(img);
     mask = zeros(size(img, 1), size(img_hsv, 2));
 
-    R = img(:,:,1);
-    G = img(:,:,2);
-    B = img(:,:,3);
-    
-    % Compute absolute differences
-    diffRG = abs(R - G);
-    diffRB = abs(R - B);
-    diffGB = abs(G - B);
-    
-    % Threshold to decide "similarity"
-    threshold = 2;
-    mask = (diffRG < threshold) & (diffRB < threshold) & (diffGB < threshold) & (R < 90);
+    % R = img(:,:,1);
+    % G = img(:,:,2);
+    % B = img(:,:,3);
+    % 
+    % % Compute absolute differences
+    % diffRG = abs(R - G);
+    % diffRB = abs(R - B);
+    % diffGB = abs(G - B);
+    % 
+    % % Threshold to decide "similarity"
+    % threshold = 2;
+    % mask = (diffRG < threshold) & (diffRB < threshold) & (diffGB < threshold) & (R < 90);
 
-    % index = find(img_hsv(:, :, 1) > 0.25 & img_hsv(:, :, 1) < 0.70 & ...
-    %                 img_hsv(:, :, 2) < 0.65 ...
-    %                 & img_hsv(:, :, 3) < 0.55);
+    index = find(img_hsv(:, :, 1) > 0.25 & img_hsv(:, :, 1) < 0.70 & ...
+                    img_hsv(:, :, 2) < 0.65 ...
+                    & img_hsv(:, :, 3) < 0.55);
     
-    % mask(index) = 1;
+    mask(index) = 1;
     imtool(mask)
     
     % Filtering
@@ -128,23 +81,34 @@ function [m, areas] = GetMedian(mask)
 end
 
 
+function mask = DetectedBackground_2(img)
 
-function [horEdges, vertEdges, edgeSum, gradMag, gradDir, highMagDir] = sobel(gray)
-    dfdx_filter = [-0.125 0 0.125; -0.25 0 0.25; -0.125 0 0.125];
-    dfdy_filter = [0.125 0.25 0.125; 0 0 0; -0.125 -0.25 -0.125];
-    % altereddxfilter = [-2 0 2; -1 0 1; -2 0 2] ./ 10;
-    % altereddyfilter = [2 1 2; 0 0 0; -2 -1 -2] ./ 10;
-    vertEdges = filter2(dfdx_filter, gray);
-    horEdges = filter2(dfdy_filter, gray);
-    % vertEdges = filter2(altereddxfilter, gray);
-    % horEdges = filter2(altereddyfilter, gray);
-    edgeSum = vertEdges + horEdges;
-    gradMag = sqrt((vertEdges).^2 + (horEdges).^2);
-    gradDir = (atan2(horEdges, vertEdges) + pi) .* (255 / (2 * pi));
-    highMagDir = zeros(size(gray));
-    thresh = 0.12;
-    highMagDir(gradMag > thresh) = gradDir(gradMag > thresh);
-    % imtool(gradMag);
-    % imtool(gradDir);
-    % imtool(highMagDir);
+    mask = zeros(size(img, 1), size(img, 2));
+    
+    index = find(img(:, :, 1) < img(:, :, 2) & img(:, :, 3) < img(:, :, 2));
+    mask(index) = 1;
+    mask = imfill(mask);
+
+    img = uint8( bsxfun(@times, double(img), double(mask)) );
+    
+    img_hsv = rgb2hsv(img);
+    
+    index = find(img_hsv(:, :, 1) < 0.75 & ...
+                img_hsv(:, :, 2) < 0.10 & ...
+                img_hsv(:, :, 3) < 0.25);
+    
+    mask = ones(size(img, 1), size(img, 2));
+    mask(index) = 0;
+    
+    
+    img = uint8( bsxfun(@times, double(img), double(mask)) );
+    grey_img = rgb2gray(img);
+    
+    img_labeled = bwlabel(grey_img, 4);
+    allAreas = regionprops(img_labeled, 'Area');
+    areas = [allAreas.Area];
+    leaf_area = max(max(areas));
+    leaf_index = find(areas == leaf_area);
+    mask = zeros(size(img_labeled));
+    mask(img_labeled == leaf_index) = 1;
 end
