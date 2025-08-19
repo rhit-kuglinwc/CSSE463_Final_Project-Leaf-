@@ -28,7 +28,7 @@ true_img = uint8( bsxfun(@times, double(img), double(mask)) );
 
 % imtool(true_img);
 true_img_hsv = rgb2hsv(true_img);
-% imtool(true_img_hsv)
+imtool(true_img_hsv)
 
 index = find(true_img_hsv(:, :, 1) < 0.75 & ...
                 true_img_hsv(:, :, 2) < 0.10 & true_img_hsv(:, :, 3) < 0.25);
@@ -36,26 +36,26 @@ index = find(true_img_hsv(:, :, 1) < 0.75 & ...
 mask = zeros(size(img, 1), size(img_hsv, 2));
 mask(index) = 1;
 mask = ~mask;
-% imtool(mask);
+imtool(mask);
 
 
 true_img = uint8( bsxfun(@times, double(true_img), double(mask)) );
-% imtool(true_img);
+imtool(true_img);
 grey_img = rgb2gray(true_img);
 
-img_labeled = bwlabel(grey_img, 4);
-max(max(img_labeled));
-allAreas = regionprops(img_labeled, 'Area');
+img_edges = edge(grey_img ,"canny" , .1);
+edges_labeled = bwlabel(img_edges, 4);
+max(max(edges_labeled));
+allAreas = regionprops(edges_labeled, 'Area');
 areas = [allAreas.Area];
 leaf_area = max(max(areas));
-leaf_group = img_labeled(areas == leaf_area);
-for i = 1:length(img_labeled)
-    if img_labeled(i) ~= leaf_group
+leaf_group = edges_labeled(areas == leaf_area);
+for i = 1:length(small_edge_numbers)
+    if edges_labeled(i) ~= leaf_group
         fprintf("triggered")
-        img_labeled(i) = 0;
+        edges_labeled(i) = 0;
     end
 end
-imtool(img_labeled);
 
 
 function mask = DetectBackground(img)

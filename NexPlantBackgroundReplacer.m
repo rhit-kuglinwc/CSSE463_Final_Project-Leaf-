@@ -2,7 +2,7 @@ clc;
 clear;
 close all hidden;
 
-img = imread("CSSE463_Final_Project-Leaf-\Apple___Cedar_apple_rust\0a41c25a-f9a6-4c34-8e5c-7f89a6ac4c40___FREC_C.Rust 9807.JPG");
+img = imread("CSSE463_Final_Project-Leaf-\Apple___Cedar_apple_rust\0cd24b0c-0a9d-483f-8734-5c08988e029f___FREC_C.Rust 3762_90deg.JPG");
 
 img = imresize(img, 0.5, 'bicubic');
 
