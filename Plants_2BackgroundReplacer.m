@@ -2,7 +2,7 @@ clc;
 clear;
 close all hidden;
 
-img = imread("CSSE463_Final_Project-Leaf-\0013_0007.JPG");
+img = imread("Plants_2/test/Alstonia Scholaris diseased (P2a)/0014_0006.JPG");
 
 img = imresize(img, 0.5, 'bicubic');
 img_hsv = rgb2hsv(img);
@@ -48,14 +48,16 @@ max(max(img_labeled));
 allAreas = regionprops(img_labeled, 'Area');
 areas = [allAreas.Area];
 leaf_area = max(max(areas));
-leaf_group = img_labeled(areas == leaf_area);
-for i = 1:length(img_labeled)
-    if img_labeled(i) ~= leaf_group
-        fprintf("triggered")
-        img_labeled(i) = 0;
-    end
-end
-imtool(img_labeled);
+leaf_index = find(areas == leaf_area);
+leaf_group = zeros(size(img_labeled));
+leaf_group(img_labeled == leaf_index) = 1;
+% for i = 1:length(img_labeled)
+%     if img_labeled(i) ~= leaf_group
+%         fprintf("triggered")
+%         img_labeled(i) = 0;
+%     end
+% end
+imtool(leaf_group);
 
 
 function mask = DetectBackground(img)
