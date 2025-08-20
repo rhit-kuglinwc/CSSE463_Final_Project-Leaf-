@@ -1,5 +1,9 @@
 clear
 clc
+
+% Assumption that the Plants_2 directory is in the same parent as this
+% script, and that subdirectories have been unaltered from original.
+
 rootdir = 'Plants_2/';
 subdir = [rootdir 'train'];
 
@@ -21,8 +25,6 @@ valImages = imageDatastore(...
     subdir, ...
     'IncludeSubfolders',true, ...
     'LabelSource', 'foldernames');
-
-% [train_feats, test_feats, valid_feats] = CNNFeatureExtract(trainImages, testImages, valImages);
 
 
 % REPLACE WITH THE NET THAT YOU ARE USING
@@ -64,6 +66,7 @@ net = freezeNetwork(net,LayerNamesToIgnore=layer);
 % augimdsTrain = augmentedImageDatastore(inputSize(1:2),trainImages);
 % augimdsValid = augmentedImageDatastore(inputSize(1:2),valImages);
 
+% Based off default options from example
 options = trainingOptions("adam", ...
     ValidationData=augimdsValid, ...
     MiniBatchSize=32, ...
