@@ -1,9 +1,21 @@
 # CSSE463_Final_Project-Leaf-
 The repository for the final project of CSSE 463 that derives tree species from leaves.
 
+## MATLAB Packages needed:
+- Deep Learning Toolbox V24.1
+- Deep Learning Toolbox Model for leNet Network V24.1.0
+- Image Processing Toolbox V24.1
+- Statistics and Machine Learning Toolbox V24.1
+
 ## There are two `.mat` files on the gebru server
 - `alexnet.mat`: contains the alexnet cnn that was made with transfer learning
 - `xception.mat`: contains the xception cnn that was made from transfer learning
+
+## Other files on the gebru server
+- Plants_2: Dataset
+- New Plants Diseases Dataset: Dataset
+- RepackagedDataSet: Umbrella dataset, containing the two previous datasets
+- DatasetRepackager.m: This combines the two datasets on the server and combines them into RepackagedDataSet.
 
 
 ## DEMO.m
