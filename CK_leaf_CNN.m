@@ -1,6 +1,6 @@
 clear
 clc
-rootdir = 'Plants_2/';
+rootdir = 'C:\Users\kuglinwc\OneDrive - Rose-Hulman Institute of Technology\Documents\GitHub\Rose Github\Plants_3\';
 subdir = [rootdir 'train'];
 
 trainImages = imageDatastore(...
@@ -22,58 +22,40 @@ valImages = imageDatastore(...
     'IncludeSubfolders',true, ...
     'LabelSource', 'foldernames');
 
-% [train_feats, test_feats, valid_feats] = CNNFeatureExtract(trainImages, testImages, valImages);
+net = imagePretrainedNetwork("alexnet",NumClasses=2);
 
-
-% REPLACE WITH THE NET THAT YOU ARE USING
-net = imagePretrainedNetwork("resnet18",NumClasses=22);
 inputSize = net.Layers(1).InputSize;
 
-
-% Anonymous functions for matlab would be like a lambda in python
-extractCode = @(s) regexp(s, '\((P\d+)', 'tokens', 'once');
-
-% can apply the function to the whole cell array with cell fun
-% need to use cell str to make the categorical it cell array
-% then need to change back to categorical
-% trainImages.Labels = categorical(cellfun(@(s) extractCode(s), cellstr(trainImages.Labels)));
-% testImages.Labels = categorical(cellfun(@(s) extractCode(s), cellstr(testImages.Labels)));
-% valImages.Labels = categorical(cellfun(@(s) extractCode(s), cellstr(valImages.Labels)));
-
-augimdsTrain = augmentedImageDatastore(inputSize(1:2),trainImages);
-augimdsTest = augmentedImageDatastore(inputSize(1:2),testImages);
-augimdsValid = augmentedImageDatastore(inputSize(1:2),valImages);
-
-
-
-
-
-% net = imagePretrainedNetwork("resnet18",NumClasses=12);
-% 
-% inputSize = net.Layers(1).InputSize;
-
 % analyzeNetwork(net)
-
-
 
 % ends up being layer fc8
 layer = networkHead(net);
 
 net = freezeNetwork(net,LayerNamesToIgnore=layer);
 
-% augimdsTrain = augmentedImageDatastore(inputSize(1:2),trainImages);
-% augimdsValid = augmentedImageDatastore(inputSize(1:2),valImages);
+augimdsTrain = augmentedImageDatastore(inputSize(1:2),trainImages);
+augimdsTest = augmentedImageDatastore(inputSize(1:2), testImages);
+augimdsValid = augmentedImageDatastore(inputSize(1:2),valImages);
 
 options = trainingOptions("adam", ...
     ValidationData=augimdsValid, ...
-    MiniBatchSize=32, ...
     ValidationFrequency=5, ...
     Plots="training-progress", ...
     Metrics="accuracy", ...
-    Verbose=false, ...
-    OutputFcn=@saveTrainingProgress);
+    Verbose=false);
 
-net = trainnet(augimdsTrain,net,"crossentropy",options);
+net = trainnet(augimdsTrain,net,"binary-crossentropy",options);
+
+[YPred, probs] = classify(netTransfer, augimdsTest);
+
+accuracy = mean(YPred == imdsTest.Labels);
+
+
+
+
+
+
+
 
 
 % The functions freezeNetwork, networkHead, and findSource come from:
@@ -166,31 +148,4 @@ connections = net.Connections;
 idx = find(connections.Destination == string(name));
 sourceNames = connections.Source(idx);
 
-end
-
-% Custom function to save plots (produced by gemini)
-function saveTrainingProgress(info)
-    persistent fig
-    if info.State == "start"
-        fig = figure('Visible','off'); % Create a figure in the background
-    end
- 
-    if info.State == "iteration" && mod(info.Iteration, 10) == 0 % Save every 10 iterations
-        % Plot training and validation accuracy/loss
-        plot(info.Iteration, info.TrainingAccuracy, 'b.', 'MarkerSize', 10);
-        hold on;
-        plot(info.Iteration, info.ValidationAccuracy, 'r.', 'MarkerSize', 10);
-        grid on;
-        xlabel('Iteration');
-        ylabel('Accuracy');
-        title('Training Progress');
-        legend('Training Accuracy', 'Validation Accuracy');
-        % Save the figure to a file
-        filename = sprintf('training_progress_iteration_%d.png', info.Iteration);
-        saveas(fig, filename);
-    end
- 
-    if info.State == "done"
-        close(fig); % Close the figure at the end
-    end
 end
