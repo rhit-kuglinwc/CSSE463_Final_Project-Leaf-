@@ -4,6 +4,7 @@ The repository for the final project of CSSE 463 that derives tree species from 
 ## MATLAB Packages needed:
 - Deep Learning Toolbox V24.1
 - Deep Learning Toolbox Model for AlexNet Network V24.1.0
+- Deep Learning ToolboxTM Model for Xception Network
 - Image Processing Toolbox V24.1
 - Statistics and Machine Learning Toolbox V24.1
 
