@@ -17,3 +17,14 @@ This file is where the xception cnn transfer learning happened. You need to run 
 
 ## all_leaf_fitcecoc.m
 This file is where the grid search for the baseline fitceoc model is done. You need to run `get_image_data.m` first to run this file. For this model the test accuracy was done on the command line.
+
+## DatasetRepackager.m
+This file is the culmination of the background removers. It takes in datasets of images and outputs one dataset that contains the pieces of the provided datasets. The provided datasets need to have a specific structure, this being the main dataset folder, which contains three subsets: test, train, and valid. For each of these subfolders, they must contains the classifier folders. Finally, these classifier folders need to contain the images of the classifier.
+
+## NexPlantBackgroundReplacer.m
+This file was a background remover for the New Plants Disease Dataset. It takes in an image specified by local file path, then outputs the image with the background removed.
+
+## Plants_2BackgroundReplacer.m
+This file was a background remover for the Plants_2 dataset. It takes in an image specified by local file path, then outputs the image with the background removed.
+
+
