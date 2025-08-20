@@ -27,4 +27,5 @@ This file was a background remover for the New Plants Disease Dataset. It takes 
 ## Plants_2BackgroundReplacer.m
 This file was a background remover for the Plants_2 dataset. It takes in an image specified by local file path, then outputs the image with the background removed.
 
-
+## Transfer_RC_Attempt
+This file contains the code that Rohit used to attempt transfer learning. To run this file you will need to have Plants_2 root directory in the working directory of the script, with subdirectories test, train, and valid, with further subdirectories dividing by class. Once this has been done you can run program and, ideally, at the end you would get a figure showing the model results. This does not work as intended due to a lack of an epoch limit.
