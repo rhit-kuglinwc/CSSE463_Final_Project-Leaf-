@@ -67,7 +67,7 @@ function process_folder(input_folder, output_folder)
                 out_path = fullfile(output_folder, item.name);
                 imwrite(result, out_path);
 
-                fprintf('Processed %s -> %s\n', img_path, out_path);
+                % fprintf('Processed %s -> %s\n', img_path, out_path);
             end
         end
     end
@@ -75,6 +75,8 @@ end
 
 
 function true_img = BackgroundRemover(img)
+
+    origonal = img;
 
     mask = zeros(size(img, 1), size(img, 2));
     
@@ -99,6 +101,13 @@ function true_img = BackgroundRemover(img)
     
     img_labeled = bwlabel(grey_img, 4);
     allAreas = regionprops(img_labeled, 'Area');
+
+    if isempty(allAreas)
+        % No objects found, return original img
+        true_img = origonal;
+        return;
+    end
+
     areas = [allAreas.Area];
     leaf_area = max(max(areas));
     leaf_index = find(areas == leaf_area);

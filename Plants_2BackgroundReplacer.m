@@ -2,7 +2,7 @@ clc;
 clear;
 close all hidden;
 
-img = imread("CSSE463_Final_Project-Leaf-\Apple___Cedar_apple_rust\1a69060b-e45e-4d95-881c-f6d1960dffcd___FREC_C.Rust 0065_90deg.JPG");
+img = imread("0005_0001.JPG");
 
 img = imresize(img, 0.5, 'bicubic');
 img_hsv = rgb2hsv(img);
@@ -10,6 +10,8 @@ img_hsv = rgb2hsv(img);
 mask = DetectedBackground_2(img);
 true_img = uint8( bsxfun(@times, double(img), double(mask)) );
 imtool(true_img)
+
+imwrite(true_img, "Ex_Leaf.JPG")
 
 
 
@@ -111,4 +113,5 @@ function mask = DetectedBackground_2(img)
     leaf_index = find(areas == leaf_area);
     mask = zeros(size(img_labeled));
     mask(img_labeled == leaf_index) = 1;
+    imtool(mask);
 end
